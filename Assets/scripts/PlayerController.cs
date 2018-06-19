@@ -1,21 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
 
     public float speed;
-    //public GUIText countText;
-    //public GUIText winText;
-    private int count;
+    public float jumpspeed;
+    public float rotationSpeed;
+    public Text countText;
+    public Text winText;
+    public Text liveText;
+    
+    private int score;
+    private int live; 
+    private bool canjump;
+    private bool cansteer;
+
     private Rigidbody rb;
 
     void Start()
     {
-        count = 0;
         rb = GetComponent<Rigidbody>();
-        //SetCountText();
-        //winText.text = "";
+        score = 0;
+        live = 3;
+        SetScoreText();
+        SetLiveText();
+        winText.text = "";
+        canjump = false;
+        cansteer = false;
     }
 
     void FixedUpdate()
@@ -24,19 +37,68 @@ public class PlayerController : MonoBehaviour {
         float moveVertical = Input.GetAxis("Vertical");
 
         Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
-        movement = Camera.main.transform.TransformDirection(movement);
 
-        rb.AddForce(movement * speed * Time.deltaTime);
-    }
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.tag == "PickUp")
+        if (canjump && Input.GetKeyDown("space"))
         {
-            other.gameObject.SetActive(false);
-            count = count + 1;
-           // SetCountText();
+            rb.AddForce(Vector3.up * jumpspeed * Time.deltaTime);
+        }
+
+        if (cansteer)
+        {
+            rb.AddForce(movement * speed * Time.deltaTime);
         }
     }
+    void OnTriggerEnter (Collider other)
+	{
+		if (other.gameObject.tag == "PickUp") {
+			other.gameObject.SetActive (false);
+			score = score + 10;
+			SetScoreText();
+		}
+        else if (other.gameObject.tag == "Goal")
+        {
+            winText.text = "You Win! Your Score was: " + score.ToString();
+        }
+        
+	}
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Floor"))
+        {
+            canjump = true;
+            cansteer = true;
+        }
+        else if (collision.gameObject.tag == "Enemy")
+        {
+            live = live - 1;
+            SetLiveText();
+            if(live < 0)
+            {
+                //YOU LOSE!
+            }
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Floor"))
+        {
+            canjump = false;
+            cansteer = false;
+        }
+    }
+
+    private void SetScoreText()
+    {
+        countText.text = "Score: " + score.ToString();
+    }
+
+    private void SetLiveText()
+    {
+        liveText.text = "Lives: " + live.ToString();
+    }
+}
     /*
     public float speed;
     public float jumpspeed;
@@ -123,4 +185,4 @@ public class PlayerController : MonoBehaviour {
         }
     }
 */
-}
+

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour {
 
@@ -11,7 +12,10 @@ public class PlayerController : MonoBehaviour {
     public Text countText;
     public Text winText;
     public Text liveText;
-    
+
+    private AudioSource coinaudio;
+    private AudioSource jumpaudio;
+    private AudioSource hitaudio;
     private int score;
     private int live; 
     private bool canjump;
@@ -19,9 +23,17 @@ public class PlayerController : MonoBehaviour {
 
     private Rigidbody rb;
 
-    void Start()
+
+    private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        AudioSource[] audios = GetComponents<AudioSource>();
+        coinaudio = audios[0];
+        jumpaudio = audios[1];
+        hitaudio = audios[2];
+    }
+    void Start()
+    {
         score = 0;
         live = 3;
         SetScoreText();
@@ -41,6 +53,7 @@ public class PlayerController : MonoBehaviour {
         if (canjump && Input.GetKeyDown("space"))
         {
             rb.AddForce(Vector3.up * jumpspeed * Time.deltaTime);
+            jumpaudio.Play();
         }
 
         if (cansteer)
@@ -51,6 +64,7 @@ public class PlayerController : MonoBehaviour {
     void OnTriggerEnter (Collider other)
 	{
 		if (other.gameObject.tag == "PickUp") {
+            coinaudio.Play();
 			other.gameObject.SetActive (false);
 			score = score + 10;
 			SetScoreText();
@@ -58,6 +72,12 @@ public class PlayerController : MonoBehaviour {
         else if (other.gameObject.tag == "Goal")
         {
             winText.text = "You Win! Your Score was: " + score.ToString();
+            SceneManager.LoadScene("win");
+        }
+        else if (other.gameObject.tag == "Lava")
+        {
+            hitaudio.Play();
+            SceneManager.LoadScene("lost");
         }
         
 	}
@@ -72,10 +92,11 @@ public class PlayerController : MonoBehaviour {
         else if (collision.gameObject.tag == "Enemy")
         {
             live = live - 1;
+            hitaudio.Play();
             SetLiveText();
             if(live < 0)
             {
-                //YOU LOSE!
+                SceneManager.LoadScene("lost");
             }
         }
     }

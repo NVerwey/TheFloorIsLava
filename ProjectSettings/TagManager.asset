@@ -9,6 +9,7 @@ TagManager:
   - Floor
   - Goal
   - Shooter
+  - Lava
   layers:
   - Default
   - TransparentFX

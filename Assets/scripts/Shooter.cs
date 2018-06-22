@@ -5,25 +5,25 @@ using UnityEngine;
 public class Shooter : MonoBehaviour {
 
     public GameObject projectile;
-    public float speed;
+    public float value;
 
-    private bool ready;
-	// Use this for initialization
+    private int ready;
+
 	void Start () {
-        ready = false;
+        ready = 0;
 	}
-	
-	// Update is called once per frame
-	private void FixedUpdate () {
-        if (ready)
+
+    private void Update()
+    {
+        ready ++;
+    }
+
+    // Update is called once per frame
+    private void FixedUpdate () {
+        if (ready >= value)
         {
             GameObject bullet = Instantiate(projectile, transform.position, Quaternion.identity) as GameObject;
-            //bullet.GetComponent<Rigidbody>().AddForce(transform.forward * speed * Time.deltaTime);
-            ready = false;
-        }
-        else if (!ready && Input.GetKeyDown("x"))
-        {
-            ready = true;
+            ready = 0;
         }
 
     }

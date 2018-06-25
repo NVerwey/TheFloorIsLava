@@ -10,6 +10,8 @@ TagManager:
   - Goal
   - Shooter
   - Lava
+  - rocket
+  - Sofa
   layers:
   - Default
   - TransparentFX

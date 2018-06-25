@@ -5,11 +5,10 @@ using UnityEngine;
 public class ProjectileScript : MonoBehaviour {
 
     public float speed;
-
-    private AudioSource exploaudio;
+    
     
 	void Start () {
-        exploaudio = GetComponent<AudioSource>();
+ 
     }
 	
 	void Update () {
@@ -20,7 +19,7 @@ public class ProjectileScript : MonoBehaviour {
     {
         if(collision.gameObject.tag != "Shooter")
         {
-            exploaudio.Play();
+            
             Destroy(gameObject);
         }
         
